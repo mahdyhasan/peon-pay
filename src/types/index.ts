@@ -41,6 +41,8 @@ export interface Receiver {
   name: string;
   accountNumber: string;
   bankName: string;
+  createdAt: string; // ADD THIS FIELD
+
 }
 
 export interface NewTransactionData {

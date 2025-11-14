@@ -89,6 +89,20 @@ class LocalDBService {
             }
         ];
         db.addresses = initialAddresses;      
+        
+        
+        // Add initial receiver for the demo user (let's make it the admin)
+        const initialReceivers: Receiver[] = [
+            {
+                id: 'receiver-1',
+                userId: 'user-1',
+                name: 'Admin User',
+                accountNumber: 'ACC-ADMIN-001',
+                bankName: 'Central Admin Bank',
+                createdAt: new Date().toISOString(), // ADD THIS
+            }
+        ];
+
 
       this.saveDB(db);
     }
@@ -139,11 +153,12 @@ class LocalDBService {
     return receivers.filter((r: Receiver) => r.userId === userId);
   }
 
-  public async addReceiver(userId: string, receiverData: Omit<Receiver, 'id' | 'userId'>): Promise<Receiver> {
+  public async addReceiver(userId: string, receiverData: Omit<Receiver, 'id' | 'userId' | 'createdAt'>): Promise<Receiver> { 
     const db = this.getDB();
     const newReceiver: Receiver = {
         id: `receiver-${Date.now()}`,
         userId,
+        createdAt: new Date().toISOString(), // ADD THIS
         ...receiverData,
     };
     if (!db.receivers) {
