@@ -1,7 +1,7 @@
 // src/context/AuthContext.tsx
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthState, User } from '../types';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { AuthState, User } from '../types';
 import { dbService } from '../services/dbService';
 
 interface AuthContextType extends AuthState {

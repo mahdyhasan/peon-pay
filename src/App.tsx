@@ -3,11 +3,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthLayout from './layouts/AuthLayout';
-import PublicLayout from './layouts/PublicLayout'; // NEW IMPORT
+import PublicLayout from './layouts/PublicLayout';
 import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage'; // NEW IMPORT
-import AboutUsPage from './pages/AboutUsPage'; // NEW IMPORT
-import ContactUsPage from './pages/ContactUsPage'; // NEW IMPORT
+import HomePage from './pages/HomePage';
+import AboutUsPage from './pages/AboutUsPage';
+import ContactUsPage from './pages/ContactUsPage';
 import UserLayout from './layouts/UserLayout';
 import AdminLayout from './layouts/AdminLayout';
 import UserDashboardPage from './pages/user/UserDashboardPage';
@@ -19,7 +19,6 @@ import AddressesPage from './pages/user/AddressesPage';
 import ReceiversPage from './pages/user/ReceiversPage';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import AllTransactionsPage from './pages/admin/AllTransactionsPage';
-
 
 // Component to handle protected user routes
 const UserRoutes = () => {
@@ -33,21 +32,8 @@ const UserRoutes = () => {
     return <Navigate to="/login" />;
   }
 
-  return (
-    <UserLayout>
-      <Routes>
-        <Route path="/dashboard" element={<UserDashboardPage />} />
-        <Route path="/send-money" element={<SendMoneyPage />} /> {/* NEW ROUTE */}
-        <Route path="/history" element={<HistoryPage />} /> {/* NEW ROUTE */}
-        <Route path="/bank-accounts" element={<BankAccountsPage />} /> {/* NEW ROUTE */}
-        <Route path="/addresses" element={<AddressesPage />} /> {/* NEW ROUTE */}
-        <Route path="/receivers" element={<ReceiversPage />} /> {/* NEW ROUTE */}
-
-        {/* Add other user routes here */}
-        <Route path="/" element={<Navigate to="/user/dashboard" />} />
-      </Routes>
-    </UserLayout>
-  );
+  // Just return the Layout, the Routes are now inside the main App component
+  return <UserLayout />;
 };
 
 // Update the AdminRoutes component to include the new route
@@ -62,17 +48,8 @@ const AdminRoutes = () => {
     return <Navigate to="/login" />;
   }
 
-  return (
-    <AdminLayout>
-      <Routes>
-        <Route path="/dashboard" element={<AdminDashboardPage />} />
-        <Route path="/users" element={<UserManagementPage />} />
-        <Route path="/transactions" element={<AllTransactionsPage />} /> {/* NEW ROUTE */}
-        {/* Add other admin routes here */}
-        <Route path="/" element={<Navigate to="/admin/dashboard" />} />
-      </Routes>
-    </AdminLayout>
-  );
+  // Just return the Layout, the Routes are now inside the main App component
+  return <AdminLayout />;
 };
 
 function App() {
@@ -81,10 +58,14 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
-          <Route path="/about" element={<PublicLayout><AboutUsPage /></PublicLayout>} />
-          <Route path="/contact" element={<PublicLayout><ContactUsPage /></PublicLayout>} />
+          <Route path="/" element={<PublicLayout children={undefined} />}>
+            {/* Nested routes under PublicLayout */}
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutUsPage />} />
+            <Route path="contact" element={<ContactUsPage />} />
+          </Route>
           
+          {/* Auth Route (Login) */}
           <Route
             path="/login"
             element={
@@ -95,8 +76,29 @@ function App() {
           />
           
           {/* Protected Routes */}
-          <Route path="/user/*" element={<UserRoutes />} />
-          <Route path="/admin/*" element={<AdminRoutes />} />
+          <Route path="/user/*" element={<UserRoutes />}>
+            {/* Nested routes under UserLayout */}
+            <Route path="dashboard" element={<UserDashboardPage />} />
+            <Route path="send-money" element={<SendMoneyPage />} />
+            <Route path="history" element={<HistoryPage />} />
+            <Route path="bank-accounts" element={<BankAccountsPage />} />
+            <Route path="addresses" element={<AddressesPage />} />
+            <Route path="receivers" element={<ReceiversPage />} />
+            {/* Redirect /user to /user/dashboard */}
+            <Route path="" element={<Navigate to="dashboard" />} />
+          </Route>
+
+          <Route path="/admin/*" element={<AdminRoutes />}>
+            {/* Nested routes under AdminLayout */}
+            <Route path="dashboard" element={<AdminDashboardPage />} />
+            <Route path="users" element={<UserManagementPage />} />
+            <Route path="transactions" element={<AllTransactionsPage />} />
+            {/* Redirect /admin to /admin/dashboard */}
+            <Route path="" element={<Navigate to="dashboard" />} />
+          </Route>
+
+          {/* Catch-all route for unknown paths */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     </AuthProvider>

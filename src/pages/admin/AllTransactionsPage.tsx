@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { dbService } from '../../services/dbService';
-import { Transaction, User } from '../../types';
+import type { Transaction, User } from '../../types';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 
 const AllTransactionsPage: React.FC = () => {
@@ -18,7 +18,6 @@ const AllTransactionsPage: React.FC = () => {
           dbService.getAllUsers(),
         ]);
         
-        // Sort transactions by date, newest first
         const sortedTransactions = allTransactions.sort(
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
@@ -35,7 +34,6 @@ const AllTransactionsPage: React.FC = () => {
     fetchData();
   }, []);
 
-  // Create a map for quick user lookups
   const userMap = new Map<string, User>();
   users.forEach(user => userMap.set(user.id, user));
 

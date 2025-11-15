@@ -1,6 +1,8 @@
 // src/services/dbService.ts
 
-import { User, AuthCredentials, Transaction, Receiver, NewTransactionData, BankAccount, NewBankAccountData, Address, NewAddressData } from '../types';
+// src/services/dbService.ts
+import type { User, AuthCredentials, Transaction, Receiver, NewTransactionData, BankAccount, NewBankAccountData, Address, NewAddressData } from '../types';
+
 
 // A simple class to manage our localStorage "database"
 class LocalDBService {
@@ -22,6 +24,7 @@ class LocalDBService {
       transactions: [],
       receivers: [],
       bankAccounts: [],
+      addresses: [], // Added addresses to the initial empty DB structure
     };
   }
 
@@ -64,7 +67,7 @@ class LocalDBService {
       const initialBankAccounts: BankAccount[] = [
         {
             id: 'bank-1',
-            userId: 'user-1', // The demo user's ID
+            userId: 'user-1',
             bankName: 'Global Bank',
             accountNumber: '1234567890',
             accountHolderName: 'John Doe',
@@ -75,41 +78,39 @@ class LocalDBService {
       db.bankAccounts = initialBankAccounts;
 
       // Add initial address for the demo user
-        const initialAddresses: Address[] = [
-            {
-                id: 'addr-1',
-                userId: 'user-1', // The demo user's ID
-                street: '123 Main St',
-                city: 'Anytown',
-                state: 'CA',
-                zipCode: '12345',
-                country: 'USA',
-                isDefault: true,
-                createdAt: new Date().toISOString(),
-            }
-        ];
-        db.addresses = initialAddresses;      
+      const initialAddresses: Address[] = [
+        {
+            id: 'addr-1',
+            userId: 'user-1',
+            street: '123 Main St',
+            city: 'Anytown',
+            state: 'CA',
+            zipCode: '12345',
+            country: 'USA',
+            isDefault: true,
+            createdAt: new Date().toISOString(),
+        }
+      ];
+      db.addresses = initialAddresses;
         
-        
-        // Add initial receiver for the demo user (let's make it the admin)
-        const initialReceivers: Receiver[] = [
-            {
-                id: 'receiver-1',
-                userId: 'user-1',
-                name: 'Admin User',
-                accountNumber: 'ACC-ADMIN-001',
-                bankName: 'Central Admin Bank',
-                createdAt: new Date().toISOString(), // ADD THIS
-            }
-        ];
-
+      // Add initial receiver for the demo user
+      const initialReceivers: Receiver[] = [
+        {
+            id: 'receiver-1',
+            userId: 'user-1',
+            name: 'Admin User',
+            accountNumber: 'ACC-ADMIN-001',
+            bankName: 'Central Admin Bank',
+            createdAt: new Date().toISOString(),
+        }
+      ];
+      db.receivers = initialReceivers;
 
       this.saveDB(db);
     }
   }
 
   // --- Authentication Methods ---
-
   public async login(credentials: AuthCredentials): Promise<{ user: User; token: string }> {
     const db = this.getDB();
     const user = db.users.find(
@@ -146,7 +147,6 @@ class LocalDBService {
   }
 
   // --- Receiver Methods ---
-
   public async getReceivers(userId: string): Promise<Receiver[]> {
     const db = this.getDB();
     const receivers = db.receivers || [];
@@ -158,7 +158,7 @@ class LocalDBService {
     const newReceiver: Receiver = {
         id: `receiver-${Date.now()}`,
         userId,
-        createdAt: new Date().toISOString(), // ADD THIS
+        createdAt: new Date().toISOString(),
         ...receiverData,
     };
     if (!db.receivers) {
@@ -170,7 +170,6 @@ class LocalDBService {
   }
 
   // --- Transaction Methods ---
-
   public async getTransactions(userId?: string): Promise<Transaction[]> {
     const db = this.getDB();
     const transactions = db.transactions || [];
@@ -217,14 +216,17 @@ class LocalDBService {
   }
 
   // --- User Methods ---
-
-  public async getAllUsers(): Promise<User[]> {
-    const db = this.getDB();
-    return db.users.map(({ password, ...user }) => user);
-  }
+public async getAllUsers(): Promise<Omit<User, 'password'>[]> { // Also good practice to omit password from the return type
+  const db = this.getDB();
+  // FIX: Add type annotation to the map callback
+  return db.users.map((user: User) => {
+    // Destructure to remove the password
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  });
+}
 
   // --- Bank Account Methods ---
-
   public async getBankAccounts(userId: string): Promise<BankAccount[]> {
     const db = this.getDB();
     const accounts = db.bankAccounts || [];
@@ -247,37 +249,28 @@ class LocalDBService {
     return newAccount;
   }
 
-
-
   // --- Address Methods ---
-
-public async getAddresses(userId: string): Promise<Address[]> {
-  const db = this.getDB();
-  const addresses = db.addresses || [];
-  return addresses.filter((a: Address) => a.userId === userId);
-}
-
-public async addAddress(userId: string, addressData: NewAddressData): Promise<Address> {
-  const db = this.getDB();
-  const newAddress: Address = {
-    id: `addr-${Date.now()}`,
-    userId,
-    createdAt: new Date().toISOString(),
-    ...addressData,
-  };
-  if (!db.addresses) {
-    db.addresses = [];
+  public async getAddresses(userId: string): Promise<Address[]> {
+    const db = this.getDB();
+    const addresses = db.addresses || [];
+    return addresses.filter((a: Address) => a.userId === userId);
   }
-  db.addresses.push(newAddress);
-  this.saveDB(db);
-  return newAddress;
-}
 
-
-
-
-
-
+  public async addAddress(userId: string, addressData: NewAddressData): Promise<Address> {
+    const db = this.getDB();
+    const newAddress: Address = {
+      id: `addr-${Date.now()}`,
+      userId,
+      createdAt: new Date().toISOString(),
+      ...addressData,
+    };
+    if (!db.addresses) {
+      db.addresses = [];
+    }
+    db.addresses.push(newAddress);
+    this.saveDB(db);
+    return newAddress;
+  }
 }
 
 // Export a singleton instance

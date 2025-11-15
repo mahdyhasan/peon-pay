@@ -41,8 +41,7 @@ export interface Receiver {
   name: string;
   accountNumber: string;
   bankName: string;
-  createdAt: string; // ADD THIS FIELD
-
+  createdAt: string;
 }
 
 export interface NewTransactionData {
@@ -50,7 +49,6 @@ export interface NewTransactionData {
   amount: number;
   note: string;
 }
-
 
 export interface BankAccount {
   id: string;
@@ -68,7 +66,6 @@ export interface NewBankAccountData {
   accountHolderName: string;
   isDefault: boolean;
 }
-
 
 export interface Address {
   id: string;
@@ -90,4 +87,3 @@ export interface NewAddressData {
   country: string;
   isDefault: boolean;
 }
-

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { dbService } from '../../services/dbService';
-import { Transaction } from '../../types';
+import type { Transaction } from '../../types';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 
 const HistoryPage: React.FC = () => {

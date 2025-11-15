@@ -2,17 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { dbService } from '../../services/dbService';
-import { User } from '../../types';
+import type { User } from '../../types'; // We still import the full User type
 import { formatDate, formatCurrency } from '../../utils/formatters';
 
+// Create a new type for users without a password for clarity
+type UserWithoutPassword = Omit<User, 'password'>;
+
 const UserManagementPage: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  // FIX: The state type must match the data type returned by the service
+  const [users, setUsers] = useState<UserWithoutPassword[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const allUsers = await dbService.getAllUsers();
+        // This line now works without error because the types match
         setUsers(allUsers);
       } catch (error) {
         console.error("Failed to fetch users:", error);

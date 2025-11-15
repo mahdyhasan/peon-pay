@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { dbService } from '../../services/dbService';
-import { Address, NewAddressData } from '../../types';
+import type { Address, NewAddressData } from '../../types';
 import Modal from '../../components/Modal';
 import { formatDate } from '../../utils/formatters';
 
