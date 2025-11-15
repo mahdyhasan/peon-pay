@@ -58,12 +58,15 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<PublicLayout children={undefined} />}>
+          {/* FIX: The element is just the layout. Children are defined inside. */}
+          <Route path="/" element={<PublicLayout />}>
             {/* Nested routes under PublicLayout */}
             <Route index element={<HomePage />} />
             <Route path="about" element={<AboutUsPage />} />
             <Route path="contact" element={<ContactUsPage />} />
           </Route>
+
+          {/* ... (rest of the routes are fine) */}
           
           {/* Auth Route (Login) */}
           <Route

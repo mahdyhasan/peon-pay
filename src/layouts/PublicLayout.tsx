@@ -1,14 +1,13 @@
 // src/layouts/PublicLayout.tsx
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom'; // 1. Import Outlet
 
-// Define the props for the component, including children
 interface PublicLayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode; // children is now optional
 }
 
-const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
+const PublicLayout: React.FC<PublicLayoutProps> = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navigation Header */}
@@ -42,7 +41,10 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow">{children}</main>
+      {/* 2. Add the Outlet here */}
+      <main className="flex-grow">
+        <Outlet />
+      </main>
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-4">
